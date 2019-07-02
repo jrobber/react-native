@@ -35,6 +35,28 @@ describe('FlatList', () => {
     );
     expect(component).toMatchSnapshot();
   });
+  it('renders odd numbered simple list (multiple columns)', () => {
+    const data = [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}];
+    const proxy = new Proxy(data, {
+      get: (target, prop) => {
+        if (prop in target) {
+          return target[prop];
+        } else {
+          throw Error('Out of bounds');
+        }
+      },
+    });
+
+    expect(() =>
+      ReactTestRenderer.create(
+        <FlatList
+          data={proxy}
+          renderItem={({item}) => <item value={item.key} />}
+          numColumns={2}
+        />,
+      ),
+    ).not.toThrow();
+  });
   it('renders simple list using ListItemComponent', () => {
     function ListItemComponent({item}) {
       return <item value={item.key} />;
